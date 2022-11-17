@@ -10,6 +10,7 @@ public class Orc extends Thread {
     private String name;
 
     public Orc(String name, Dagger rightDagger, Dagger leftDagger) {
+        this.name = name;
         this.rightDagger = rightDagger;
         this.leftDagger = leftDagger;
     }
@@ -35,31 +36,36 @@ public class Orc extends Thread {
 
     private void drinking() throws InterruptedException {
         debug("Is drinking now...");
-        Thread.sleep((long) (Math.random() * 2000) + 1000);
+        Thread.sleep((long) (Math.random() * 200) + 100);
     }
 
     private void grabRightDagger() {
-        rightDagger.setOccupied(true);
+        debug("Trying to grab right dagger");
+        rightDagger.occupy();
     }
 
     private void grabLeftDagger() {
-        leftDagger.setOccupied(true);
+        debug("Trying to grab left dagger");
+        leftDagger.occupy();
     }
 
     private void feasting() throws InterruptedException {
-        Thread.sleep((long) (Math.random() * 2000) + 1000);
-    }
-
-    private void releaseLeftDagger() {
-        rightDagger.setOccupied(false);
+        debug("Is having a feast");
+        Thread.sleep((long) (Math.random() * 200) + 100);
     }
 
     private void releaseRightDagger() {
-        leftDagger.setOccupied(true);
+        rightDagger.release();
+        debug("Right dagger released");
     }
 
-    private String debug(String message){
-        return LocalTime.now() + " | " + name + ": " + message;
+    private void releaseLeftDagger() {
+        leftDagger.release();
+        debug("Left dagger released");
+    }
+
+    private void debug(String message){
+        System.out.println(LocalTime.now() + " | " + name + ": " + message);
     }
 
 }

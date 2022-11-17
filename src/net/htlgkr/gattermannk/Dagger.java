@@ -1,31 +1,26 @@
 package net.htlgkr.gattermannk;
 
 import java.util.Objects;
+import java.util.concurrent.locks.Lock;
 
 public class Dagger {
 
     private boolean isOccupied;
-    private int id;
+    private Lock daggerLocker;
 
-    public Dagger(int id) {
-        this.id = id;
+    public Dagger(Lock daggerLocker) {
+        this.daggerLocker = daggerLocker;
         this.isOccupied = false;
     }
 
-    public void setOccupied(boolean occupied){
-        this.isOccupied = occupied;
+    public void occupy(){
+        daggerLocker.lock();
+        isOccupied = true;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Dagger dagger = (Dagger) o;
-        return isOccupied == dagger.isOccupied && id == dagger.id;
+    public void release(){
+        isOccupied = false;
+        daggerLocker.unlock();
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(isOccupied, id);
-    }
 }
