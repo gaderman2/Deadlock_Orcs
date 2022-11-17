@@ -15,10 +15,11 @@ public class Main {
         }
 
         for(int i = 0; i < 5; i++){
-            int x = i + 1 < daggerList.size() ? i + 1 : 0;
-            int y = i - 1 > 0 ? i - 1 : daggerList.size() - 1;
+            int x = i < daggerList.size() ? i : 0;
+            int y = i - 1 >= 0 ? i - 1 : daggerList.size() - 1;
 
             orcList.add(new Orc("Orc-" + i, daggerList.get(x), daggerList.get(y)));
+            System.out.println("Orc-" + i + " has Daggers " + x + " " + y);
         }
 
         orcList.forEach(Thread::start);

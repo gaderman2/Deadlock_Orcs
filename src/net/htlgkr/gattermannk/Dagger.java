@@ -19,8 +19,13 @@ public class Dagger {
     }
 
     public void release(){
+        //if(!isOccupied) return;
         isOccupied = false;
         daggerLocker.unlock();
+    }
+
+    public boolean isOccupied(){
+        return isOccupied;
     }
 
 }

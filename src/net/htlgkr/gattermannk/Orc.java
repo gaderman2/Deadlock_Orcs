@@ -1,6 +1,7 @@
 package net.htlgkr.gattermannk;
 
 import java.time.LocalTime;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Orc extends Thread {
 
@@ -8,6 +9,8 @@ public class Orc extends Thread {
     private Dagger leftDagger;
 
     private String name;
+
+    private static ReentrantLock grabLock = new ReentrantLock();
 
     public Orc(String name, Dagger rightDagger, Dagger leftDagger) {
         this.name = name;
@@ -17,14 +20,25 @@ public class Orc extends Thread {
 
     @Override
     public void run() {
+        boolean shouldDrink = true;
         while (true) {
             try {
-                drinking();
+                if(shouldDrink) drinking();
+                shouldDrink = false;
 
-                grabRightDagger();
-                grabLeftDagger();
+                grabLock.lock();
+                try {
+                    if (!grabDaggers()) {
+                        //debug("Continued loop");
+                        //Thread.sleep(1);
+                        continue;
+                    }
+                }finally {
+                    grabLock.unlock();
+                }
 
                 feasting();
+                shouldDrink = true;
 
                 releaseRightDagger();
                 releaseLeftDagger();
@@ -36,22 +50,21 @@ public class Orc extends Thread {
 
     private void drinking() throws InterruptedException {
         debug("Is drinking now...");
-        Thread.sleep((long) (Math.random() * 200) + 100);
+        Thread.sleep((long) (Math.random() * 3000) + 3000);
     }
 
-    private void grabRightDagger() {
-        debug("Trying to grab right dagger");
+    private boolean grabDaggers() {
+        if(rightDagger.isOccupied() || leftDagger.isOccupied()) return false;
+
         rightDagger.occupy();
-    }
-
-    private void grabLeftDagger() {
-        debug("Trying to grab left dagger");
         leftDagger.occupy();
+        debug("Both daggers grabbed");
+        return true;
     }
 
     private void feasting() throws InterruptedException {
         debug("Is having a feast");
-        Thread.sleep((long) (Math.random() * 200) + 100);
+        Thread.sleep((long) (Math.random() * 8000) + 5000);
     }
 
     private void releaseRightDagger() {
